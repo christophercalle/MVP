@@ -1,13 +1,15 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
+const cors = require('cors');
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 // Initialize Database
 const db = new sqlite3.Database('./database.sqlite');
 db.serialize(() => {
-    db.run("CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT)");
+    db.run("CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, title TEXT)");
 })
 
 
