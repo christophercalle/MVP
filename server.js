@@ -41,6 +41,14 @@ app.post('/tasks/delete', (req, res) => {
 });
 
 
+// UPDATE: Mark a task as completed
+app.post('/tasks/update', (req, res) => {
+  const { id, completed } = req.body;
+  db.run("UPDATE tasks SET completed = ? WHERE id = ?", [completed, id], function(err) {
+    res.json({ updated: this.changes });
+  });
+});
+
 
 
 app.get('/', (req, res) => {
