@@ -7,10 +7,17 @@ async function getTasks() {
     list.innerHTML = ''; // Clear the list before redrawing to prevent duplicates
 
     tasks.forEach(task => {
-        const li = document.createElement('li');
-        li.textContent = task.name;
-        list.appendChild(li);
-    });
+    const li = document.createElement('li');
+    li.textContent = task.name;
+
+    // Create the Delete button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.onclick = () => deleteTask(task.id); // Pass the task ID
+
+    li.appendChild(deleteBtn);
+    list.appendChild(li);
+});
 }
 
 // CREATE: Send a new task to the server
@@ -35,3 +42,17 @@ async function addTask() {
 
 // INITIALIZE: Load the tasks as soon as the page opens
 getTasks();
+
+
+
+
+async function deleteTask(id) {
+    const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+        method: 'DELETE'
+    });
+
+    if (response.ok) {
+        console.log("Task deleted!");
+        getTasks(); // Refresh the list immediately
+    }
+}
