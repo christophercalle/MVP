@@ -7,14 +7,21 @@ async function getTasks() {
     list.innerHTML = ''; 
 
     tasks.forEach(task => {
+        console.log("Task object from DB:", task);
+
         const li = document.createElement('li');
-        // Handle empty names from the database
-        li.textContent = (task.name && task.name.trim() !== "") ? task.name : "Untitled Task";
+        // CHANGED: Using task.title instead of task.name
+        li.textContent = (task.title && task.title.trim() !== "") ? task.title : "Untitled Task";
+
+        const taskId = task.id;
 
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
         deleteBtn.style.marginLeft = "10px";
-        deleteBtn.onclick = () => deleteTask(task.id);
+        
+        if (taskId) {
+            deleteBtn.onclick = () => deleteTask(taskId);
+        }
 
         li.appendChild(deleteBtn);
         list.appendChild(li);
@@ -24,9 +31,9 @@ async function getTasks() {
 // CREATE: Send a new task
 async function addTask() {
     const input = document.getElementById('taskInput');
-    const taskName = input.value.trim(); // Clean up whitespace
+    const taskTitle = input.value.trim();
 
-    if (!taskName) {
+    if (!taskTitle) {
         alert("Please enter a task!");
         return;
     }
@@ -34,12 +41,13 @@ async function addTask() {
     const response = await fetch('http://localhost:3000/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: taskName })
+        // CHANGED: Sending "title" to match your database schema
+        body: JSON.stringify({ title: taskTitle })
     });
 
     if (response.ok) {
         input.value = ''; 
-        input.focus(); // Keep the cursor ready for the next task
+        input.focus(); 
         getTasks(); 
     }
 }

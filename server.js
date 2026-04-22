@@ -32,10 +32,14 @@ app.get('/tasks', (req, res) => {
 });
 
 
-// DELETE: Remove a task
-app.post('/tasks/delete', (req, res) => {
-  const { id } = req.body;
+// DELETE: Remove a task using URL parameters
+app.delete('/tasks/:id', (req, res) => {
+  const { id } = req.params; // Grabs the ID from the URL
   db.run("DELETE FROM tasks WHERE id = ?", [id], function(err) {
+    if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+    }
     res.json({ deleted: this.changes });
   });
 });
