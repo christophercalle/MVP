@@ -1,31 +1,35 @@
-// FETCH: Get all tasks from the database and display them
+// FETCH: Get all tasks and display them
 async function getTasks() {
     const response = await fetch('http://localhost:3000/tasks');
     const tasks = await response.json();
     
     const list = document.getElementById('taskList');
-    list.innerHTML = ''; // Clear the list before redrawing to prevent duplicates
+    list.innerHTML = ''; 
 
     tasks.forEach(task => {
-    const li = document.createElement('li');
-    li.textContent = task.name;
+        const li = document.createElement('li');
+        // Handle empty names from the database
+        li.textContent = (task.name && task.name.trim() !== "") ? task.name : "Untitled Task";
 
-    // Create the Delete button
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.onclick = () => deleteTask(task.id); // Pass the task ID
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.style.marginLeft = "10px";
+        deleteBtn.onclick = () => deleteTask(task.id);
 
-    li.appendChild(deleteBtn);
-    list.appendChild(li);
-});
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+    });
 }
 
-// CREATE: Send a new task to the server
+// CREATE: Send a new task
 async function addTask() {
     const input = document.getElementById('taskInput');
-    const taskName = input.value;
+    const taskName = input.value.trim(); // Clean up whitespace
 
-    if (!taskName) return; // Prevent empty tasks
+    if (!taskName) {
+        alert("Please enter a task!");
+        return;
+    }
 
     const response = await fetch('http://localhost:3000/tasks', {
         method: 'POST',
@@ -34,25 +38,22 @@ async function addTask() {
     });
 
     if (response.ok) {
-        input.value = ''; // Clear the input field
-        console.log("Task added!");
-        getTasks(); // Refresh the list so the new task appears immediately
+        input.value = ''; 
+        input.focus(); // Keep the cursor ready for the next task
+        getTasks(); 
     }
 }
 
-// INITIALIZE: Load the tasks as soon as the page opens
-getTasks();
-
-
-
-
+// DELETE: Remove a task
 async function deleteTask(id) {
     const response = await fetch(`http://localhost:3000/tasks/${id}`, {
         method: 'DELETE'
     });
 
     if (response.ok) {
-        console.log("Task deleted!");
-        getTasks(); // Refresh the list immediately
+        getTasks(); 
     }
 }
+
+// INITIALIZE
+getTasks();
