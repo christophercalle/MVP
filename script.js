@@ -1,0 +1,1 @@
+console.log("Pass 2: Frontend script loaded.");
