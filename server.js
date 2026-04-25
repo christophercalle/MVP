@@ -17,4 +17,15 @@ app.get('/', (req, res) => {
   res.send('Pass 2 Server is running.');
 });
 
+// GET: Read all tasks
+app.get('/tasks', (req, res) => {
+  db.all("SELECT * FROM tasks", [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
 app.listen(3000, () => console.log('API running at http://localhost:3000'));
