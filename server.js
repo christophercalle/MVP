@@ -29,4 +29,14 @@ app.post('/tasks', (req, res) => {
     });
 });
 
+
+// DELETE: Remove a task
+app.delete('/tasks/:id', (req, res) => {
+    const { id } = req.params;
+    db.run("DELETE FROM tasks WHERE id = ?", [id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Deleted", changes: this.changes });
+    });
+});
+
 app.listen(3000, () => console.log('API running at http://localhost:3000'));
