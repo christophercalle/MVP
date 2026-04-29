@@ -28,12 +28,16 @@ async function getTasks() {
     });
 }
 
-// POST: Send a new task to the server
+// POST: Send a new task to the server with validation
 async function addTask() {
     const input = document.getElementById('taskInput');
     const title = input.value.trim();
 
-    if (!title) return;
+    // Prevent empty tasks
+    if (!title) {
+        alert("Please enter a task title.");
+        return;
+    }
 
     await fetch('http://localhost:3000/tasks', {
         method: 'POST',
