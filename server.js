@@ -29,6 +29,15 @@ app.post('/tasks', (req, res) => {
     });
 });
 
+// PUT: Update a task's title
+app.put('/tasks/:id', (req, res) => {
+    const { id } = req.params;
+    const { title } = req.body;
+    db.run("UPDATE tasks SET title = ? WHERE id = ?", [title, id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ updated: this.changes });
+    });
+});
 
 // DELETE: Remove a task
 app.delete('/tasks/:id', (req, res) => {
