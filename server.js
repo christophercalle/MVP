@@ -20,14 +20,24 @@ app.get('/tasks', (req, res) => {
     });
 });
 
-// POST: Create a new task
+
+
+// POST: Create a new task with server-side validation
 app.post('/tasks', (req, res) => {
     const { title } = req.body;
+
+    // Check if title is missing or just whitespace
+    if (!title || title.trim() === "") {
+        return res.status(400).json({ error: "Task title is required" });
+    }
+
     db.run("INSERT INTO tasks (title) VALUES (?)", [title], function(err) {
         if (err) return res.status(400).json({ error: err.message });
         res.status(201).json({ id: this.lastID, title });
     });
 });
+
+
 
 // PUT: Update a task's title
 app.put('/tasks/:id', (req, res) => {
