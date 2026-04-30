@@ -26,7 +26,7 @@ app.get('/tasks', (req, res) => {
 app.post('/tasks', (req, res) => {
     const { title } = req.body;
 
-    // Check if title is missing or just whitespace
+    // Reject empty or whitespace-only titles
     if (!title || title.trim() === "") {
         return res.status(400).json({ error: "Task title is required" });
     }
