@@ -28,25 +28,36 @@ async function getTasks() {
     });
 }
 
-// POST: Send a new task to the server with validation
-async function addTask() {
+// POST: Send a new task with a simple loading state
+// Note: Requires <button onclick="addTask(this)"> in your HTML
+async function addTask(button) {
     const input = document.getElementById('taskInput');
     const title = input.value.trim();
 
-    // Prevent empty tasks
     if (!title) {
         alert("Please enter a task title.");
         return;
     }
 
-    await fetch('http://localhost:3000/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title })
-    });
+    // Start Loading State
+    button.disabled = true;
+    button.textContent = 'Adding...';
 
-    input.value = '';
-    getTasks(); 
+    try {
+        await fetch('http://localhost:3000/tasks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title })
+        });
+    } catch (error) {
+        console.error("Error adding task:", error);
+    } finally {
+        // End Loading State
+        button.disabled = false;
+        button.textContent = 'Add Task';
+        input.value = '';
+        getTasks(); 
+    }
 }
 
 // PUT: Edit a task
