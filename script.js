@@ -60,15 +60,21 @@ async function addTask(button) {
     }
 }
 
-// PUT: Edit a task
+// PUT: Edit a task with validation
 async function editTask(id, currentTitle) {
     const newTitle = prompt("Edit task:", currentTitle);
-    if (!newTitle || newTitle === currentTitle) return;
+    
+    // 1. If user clicks "Cancel", newTitle is null
+    // 2. If user enters nothing, newTitle is ""
+    // 3. If title is unchanged, don't waste a network request
+    if (newTitle === null || newTitle.trim() === "" || newTitle === currentTitle) {
+        return;
+    }
 
     await fetch(`http://localhost:3000/tasks/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newTitle })
+        body: JSON.stringify({ title: newTitle.trim() })
     });
     getTasks();
 }
