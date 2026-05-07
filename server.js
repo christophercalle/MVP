@@ -4,3 +4,5 @@ const cors = require('cors');        /*  Allows browser to talk to the backend *
 
 const app = express();
 const db = new sqlite3.Database('database.sqlite');
+
+app.use(cors());
