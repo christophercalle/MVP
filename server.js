@@ -6,3 +6,4 @@ const app = express();
 const db = new sqlite3.Database('database.sqlite');
 
 app.use(cors());
+app.use(express.json());
