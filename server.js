@@ -7,3 +7,7 @@ const db = new sqlite3.Database('database.sqlite');
 
 app.use(cors());
 app.use(express.json());
+
+db.serialize(() => {
+    db.run("CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT)");
+});
