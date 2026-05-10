@@ -23,7 +23,14 @@ app.listen(3000, () => {
 
 /* API ROUTES */
 
+
 // GET: Retrieve all tasks
-app.get('/tasks', (req,res) => {
-    res.send('API is working! Next we wil connect this to the database');
+app.get('/tasks', (req, res) => {
+    db.all("SELECT * FROM tasks", [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
 });
