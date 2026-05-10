@@ -34,3 +34,22 @@ app.get('/tasks', (req, res) => {
         res.json(rows);
     });
 });
+
+
+// POST: Create a new task
+app.post('/tasks', (req, res) => {
+    const { title } = req.body;
+    
+    if (!title) {
+        res.status(400).json({ error: "Title is required" });
+        return;
+    }
+
+    db.run("INSERT INTO tasks (title) VALUES (?)", [title], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ id: this.lastID, title });
+    });
+});
