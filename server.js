@@ -53,3 +53,24 @@ app.post('/tasks', (req, res) => {
         res.json({ id: this.lastID, title });
     });
 });
+
+
+// DELETE: Remove a task by ID
+app.delete('/tasks/:id', (req, res) => {
+    const { id } = req.params;
+
+    db.run("DELETE FROM tasks WHERE id = ?", [id], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        
+        // this.changes tells us how many rows were actually deleted
+        if (this.changes === 0) {
+            res.status(404).json({ error: "Task not found" });
+            return;
+        }
+
+        res.json({ message: "Task deleted successfully", id: Number(id) });
+    });
+});
