@@ -71,7 +71,32 @@ app.delete('/api/tasks/:id', (req, res) => {
     });
 });
 
+
+// PATCH: Toggle task completion status
+app.patch('/api/tasks/:id', (req, res) => {
+    const taskId = parseInt(req.params.id);
+    const { completed } = req.body; // Expecting { "completed": true } or false
+
+    // SQLite uses 0 for false and 1 for true
+    const sqliteCompleted = completed ? 1 : 0;
+
+    const sql = `UPDATE tasks SET completed = ? WHERE id = ?`;
+    
+    db.run(sql, [sqliteCompleted, taskId], function(err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (this.changes === 0) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+        res.json({ message: `Task ${taskId} updated`, id: taskId, completed });
+    });
+});
+
+
 /* 6. SERVER STARTUP  */
 app.listen(3000, () => {
     console.log('Server is listening on PORT 3000');
 });
+
+
