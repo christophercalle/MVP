@@ -93,8 +93,16 @@ app.patch('/api/tasks/:id', (req, res) => {
     });
 });
 
+// 6. GLOBAL ERROR HANDLING
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ 
+        error: "Something went wrong on the server!", 
+        details: err.message 
+    });
+});
 
-/* 6. SERVER STARTUP  */
+/* 7. SERVER STARTUP  */
 app.listen(3000, () => {
     console.log('Server is listening on PORT 3000');
 });
