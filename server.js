@@ -56,16 +56,16 @@ app.post('/api/tasks', (req, res) => {
     });
 });
 
+
 // PATCH: Toggle task completion status
 app.patch('/api/tasks/:id', (req, res) => {
-    const taskId = parseInt(req.params.id);
-    const { completed } = req.body; // Expecting { "completed": true } or false
-
-    // SQLite uses 0 for false and 1 for true
+    const taskId = req.params.id; // No longer strictly dependent on parseInt for safety
+    const { completed } = req.body;
     const sqliteCompleted = completed ? 1 : 0;
 
     const sql = "UPDATE tasks SET completed = ? WHERE id = ?";
     
+    // Pass parameters safely inside the array block
     db.run(sql, [sqliteCompleted, taskId], function(err) {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -79,8 +79,9 @@ app.patch('/api/tasks/:id', (req, res) => {
 
 // DELETE a task (Removing from SQLite)
 app.delete('/api/tasks/:id', (req, res) => {
-    const taskId = parseInt(req.params.id);
+    const taskId = req.params.id;
 
+    // Pass parameters safely inside the array block
     db.run("DELETE FROM tasks WHERE id = ?", [taskId], function(err) {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -91,6 +92,7 @@ app.delete('/api/tasks/:id', (req, res) => {
         res.json({ message: `Task ${taskId} deleted successfully`, id: taskId });
     });
 });
+
 
 /* 6. GLOBAL ERROR HANDLING */
 app.use((err, req, res, next) => {
