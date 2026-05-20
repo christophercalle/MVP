@@ -106,6 +106,20 @@ app.use((err, req, res, next) => {
 /* 7. SERVER STARTUP  */
 const PORT = process.env.PORT || 3000;
 
+
+// 8. GRACEFUL SHUTDOWN
+process.on('SIGINT', () => {
+    db.close((err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        console.log('Closed the SQLite database connection.');
+        process.exit(0);
+    });
+});
+
+
+
 app.listen(PORT, () => {
     console.log(`Server is listening on PORT ${PORT}`);
 });
