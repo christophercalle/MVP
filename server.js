@@ -11,6 +11,12 @@ const db = new sqlite3.Database('database.sqlite');
 app.use(cors());
 app.use(express.json());
 
+// Custom Request Logger
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} to ${req.url}`);
+    next(); // Tells Express to pass the request to the next route or middleware
+});
+
 /* 4. DATABASE SETUP  */
 db.serialize(() => {
     // Adding a 'completed' column so it matches your temporary schema
@@ -123,3 +129,4 @@ process.on('SIGINT', () => {
 app.listen(PORT, () => {
     console.log(`Server is listening on PORT ${PORT}`);
 });
+
