@@ -13,26 +13,30 @@ app.use(express.json());
 
 /* 4. DATABASE SETUP */
 db.serialize(() => {
-    db.run(`
-        CREATE TABLE IF NOT EXISTS tasks (
+    db.run(`CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
             title TEXT,
             completed INTEGER DEFAULT 0
-        )
-    `);
+        )`);
 });
 
 
-/* ROUTES */
-app.get('/api/tasks', (req,res) => {
-    db.all('SELECT * FROM tasks', [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ error err.message});
-        }
+/* 4. DATABASE SETUP */
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        title TEXT,
+        completed INTEGER DEFAULT 0
+    )`);
+});
+
+
+
+app.get('/tasks', (req, res) => {
+    db.all('SELECT * FROM tasks', [], (err,rows) => {
         res.json(rows);
     })
 })
-
 
 
 /* SERVER STARTUP */
@@ -41,3 +45,10 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is listening on PORT ${PORT}`);
 });
+
+
+
+
+
+
+
