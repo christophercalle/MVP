@@ -22,7 +22,20 @@ db.serialize(() => {
     `);
 });
 
-/* 7. SERVER STARTUP */
+
+/* ROUTES */
+app.get('/api/tasks', (req,res) => {
+    db.all('SELECT * FROM tasks', [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error err.message});
+        }
+        res.json(rows);
+    })
+})
+
+
+
+/* SERVER STARTUP */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
