@@ -39,6 +39,15 @@ app.get('/tasks', (req, res) => {
 })
 
 
+/* 6. POST ROUTE */
+app.post('/tasks', (req, res) => {
+    const { title } = req.body;
+    db.run('INSERT INTO tasks (title) VALUES (?)', [title], () => {
+        res.json({ message: 'Task added!' });
+    });
+});
+
+
 /* SERVER STARTUP */
 const PORT = process.env.PORT || 3000;
 
