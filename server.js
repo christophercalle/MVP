@@ -31,7 +31,7 @@ db.serialize(() => {
 });
 
 
-
+/* GET ROUTE */
 app.get('/tasks', (req, res) => {
     db.all('SELECT * FROM tasks', [], (err,rows) => {
         res.json(rows);
@@ -39,7 +39,7 @@ app.get('/tasks', (req, res) => {
 })
 
 
-/* 6. POST ROUTE */
+/* POST ROUTE */
 app.post('/tasks', (req, res) => {
     const { title } = req.body;
     db.run('INSERT INTO tasks (title) VALUES (?)', [title], () => {
@@ -47,6 +47,15 @@ app.post('/tasks', (req, res) => {
     });
 });
 
+/* PUT ROUTE */
+app.put('/tasks/:id', (req, res) => {
+    const { id } = req.params;
+    const { completed } = req.body;
+    
+    db.run('UPDATE tasks SET completed = ? WHERE id = ?', [completed, id], () => {
+        res.json({ message: 'Task updated!' });
+    });
+});
 
 /* SERVER STARTUP */
 const PORT = process.env.PORT || 3000;
