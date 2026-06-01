@@ -57,6 +57,16 @@ app.put('/tasks/:id', (req, res) => {
     });
 });
 
+/* DELETE ROUTE */
+app.delete('/tasks/:id', (req, res) => {
+    const { id } = req.params;
+    
+    db.run('DELETE FROM tasks WHERE id = ?', [id], () => {
+        res.json({ message: 'Task deleted!' });
+    });
+});
+
+
 /* SERVER STARTUP */
 const PORT = process.env.PORT || 3000;
 
