@@ -1,3 +1,5 @@
+// Server configuration and main routing endpoints
+
 /* 1. IMPORTS */
 const express = require('express');
 const sqlite3 = require('sqlite3'); // Added missing import
@@ -10,15 +12,6 @@ const db = new sqlite3.Database('database.sqlite');
 /* 3. MIDDLEWARE */ 
 app.use(cors());
 app.use(express.json());
-
-/* 4. DATABASE SETUP */
-db.serialize(() => {
-    db.run(`CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            title TEXT,
-            completed INTEGER DEFAULT 0
-        )`);
-});
 
 
 /* 4. DATABASE SETUP */
