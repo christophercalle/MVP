@@ -1,5 +1,231 @@
 <!DOCTYPE html>
-<html>
-<head></head>
-<body></body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duel Focus MVP</title>
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --primary: #bb86fc;
+            --text: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --border: #333333;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        input[type="text"]:focus {
+            outline: 1px solid var(--primary);
+        }
+
+        button {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .task-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-dim);
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: #cf6679;
+            border: 1px solid #cf6679;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-delete:hover {
+            background: #cf6679;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Duel Focus</h1>
+        <div class="subtitle">MVP Interface</div>
+    </header>
+
+    <main>
+        <form id="task-form" class="form-group">
+            <input type="text" id="task-input" placeholder="Enter a new session task..." required />
+            <button type="submit">Add Task</button>
+        </form>
+
+        <ul id="task-list" class="task-list">
+            </ul>
+    </main>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3000/tasks'; // Adjust to match your backend port
+    const taskForm = document.getElementById('task-form');
+    const taskInput = document.getElementById('task-input');
+    const taskList = document.getElementById('task-list');
+
+    // Fetch and render tasks
+    async function fetchTasks() {
+        try {
+            const res = await fetch(API_URL);
+            const tasks = await res.json();
+            taskList.innerHTML = '';
+            tasks.forEach(renderTask);
+        } catch (err) {
+            console.error('Error fetching tasks:', err);
+        }
+    }
+
+    // Append a single task to the UI
+    function renderTask(task) {
+        const li = document.createElement('li');
+        li.className = `task-item ${task.completed ? 'completed' : ''}`;
+        li.dataset.id = task.id;
+
+        li.innerHTML = `
+            <div class="task-meta">
+                <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id}, this.checked)">
+                <span class="task-text">${task.title}</span>
+            </div>
+            <button class="btn-delete" onclick="deleteTask(${task.id})">Delete</button>
+        `;
+        taskList.appendChild(li);
+    }
+
+    // Create task
+    taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = taskInput.value.trim();
+        if (!title) return;
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title })
+            });
+            if (res.ok) {
+                taskInput.value = '';
+                fetchTasks();
+            }
+        } catch (err) {
+            console.error('Error creating task:', err);
+        }
+    });
+
+    // Toggle task completion (PATCH)
+    async function toggleTask(id, completed) {
+        try {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ completed })
+            });
+            fetchTasks();
+        } catch (err) {
+            console.error('Error updating task:', err);
+        }
+    }
+
+    // Delete task
+    async function deleteTask(id) {
+        try {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            fetchTasks();
+        } catch (err) {
+            console.error('Error deleting task:', err);
+        }
+    }
+
+    // Initial load
+    fetchTasks();
+</script>
+
+</body>
 </html>
