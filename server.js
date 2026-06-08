@@ -40,10 +40,11 @@ app.post('/tasks', (req, res) => {
     });
 });
 
-/* PUT ROUTE */
-app.put('/tasks/:id', (req, res) => {
+/* PATCH ROUTE */
+app.patch('/tasks/:id', (req, res) => {
     const { id } = req.params;
-    const { completed } = req.body;
+    // Handle the boolean incoming from frontend and convert to 1 or 0 for SQLite
+    const completed = req.body.completed ? 1 : 0;
     
     db.run('UPDATE tasks SET completed = ? WHERE id = ?', [completed, id], () => {
         res.json({ message: 'Task updated!' });
